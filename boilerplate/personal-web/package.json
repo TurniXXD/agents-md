@@ -1,0 +1,53 @@
+{
+  "name": "agents-md",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "prepare": "husky",
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^9.4.0",
+    "classnames": "^2.5.1",
+    "lucide-react": "^0.575.0",
+    "next": "16.1.6",
+    "next-intl": "^4.9.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "resend": "^6.10.0",
+    "sass": "^1.99.0",
+    "sonner": "^2.0.7",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
+    "@playwright/test": "^1.58.2",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.7.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/three": "^0.183.1",
+    "eslint": "^9.38.0",
+    "eslint-config-next": "16.1.6",
+    "husky": "^9.1.7",
+    "jest": "^30.2.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --fix"
+    ],
+    "*.{css,json,md}": [
+      "prettier --write"
+    ]
+  }
+}
