@@ -1,7 +1,5 @@
 # AGENTS.md
 
-This repository uses a single frontend workspace in [`/web`](/Users/teapot/work/test/agents-md/web).
-
 ## Frontend Stack
 
 - Use Next.js 16 with App Router.
@@ -32,16 +30,17 @@ This repository uses a single frontend workspace in [`/web`](/Users/teapot/work/
 
 ## Reuse Rules
 
-- Treat [`boilerplate`](/Users/teapot/work/test/agents-md/boilerplate) as a source of reusable templates, not a folder to copy wholesale.
+- Treat [`boilerplate`](boilerplate) as a source of reusable templates, not a folder to copy wholesale.
 - Always add a `.gitignore` to generated projects.
-- Build project `.gitignore` files from [`boilerplate/.gitignore`](/Users/teapot/work/test/agents-md/boilerplate/.gitignore), but copy only the sections that apply to the project being created.
+- Build project `.gitignore` files from [`boilerplate/.gitignore`](boilerplate/.gitignore), but copy only the sections that apply to the project being created.
 - Do not add ignore rules for stacks that are not present; for example, do not add Python backend rules when the project has no Python backend, and do not add Rust or Go rules unless those backends exist.
-- Reuse the same root pre-commit flow from [`boilerplate/.husky/pre-commit`](/Users/teapot/work/test/agents-md/boilerplate/.husky/pre-commit) and [`boilerplate/.husky/commit-msg`](/Users/teapot/work/test/agents-md/boilerplate/.husky/commit-msg) when the project uses Git hooks.
-- Reuse Husky, lint-staged, prettier, and commitlint from [`boilerplate/package.json`](/Users/teapot/work/test/agents-md/boilerplate/package.json) and [`boilerplate/commitlint.config.cjs`](/Users/teapot/work/test/agents-md/boilerplate/commitlint.config.cjs), but only include dependencies and scripts needed by the target project.
-- Reuse the repo pipeline setup from [`boilerplate/.github/workflows/ci.yml`](/Users/teapot/work/test/agents-md/boilerplate/.github/workflows/ci.yml), adjusting commands to match the actual project stack and omitting jobs for missing stacks.
-- Reuse the env setup pattern from [`boilerplate/.env.example`](/Users/teapot/work/test/agents-md/boilerplate/.env.example), adding only env variables that are actually used.
-- Use Dockerfile templates from [`boilerplate/dockerfiles`](/Users/teapot/work/test/agents-md/boilerplate/dockerfiles) only when the project needs Docker.
-- Copy only the Dockerfiles for stacks that actually exist in the project: [`nextjs.Dockerfile`](/Users/teapot/work/test/agents-md/boilerplate/dockerfiles/nextjs.Dockerfile), [`python-be.Dockerfile`](/Users/teapot/work/test/agents-md/boilerplate/dockerfiles/python-be.Dockerfile), [`rust-be.Dockerfile`](/Users/teapot/work/test/agents-md/boilerplate/dockerfiles/rust-be.Dockerfile), or [`go-be.Dockerfile`](/Users/teapot/work/test/agents-md/boilerplate/dockerfiles/go-be.Dockerfile).
+- Reuse the same root pre-commit flow from [`boilerplate/.husky/pre-commit`](boilerplate/.husky/pre-commit) and [`boilerplate/.husky/commit-msg`](boilerplate/.husky/commit-msg) when the project uses Git hooks.
+- Reuse Husky, lint-staged, prettier, commitlint, and ESLint dependencies from [`boilerplate/package.json`](boilerplate/package.json) and [`boilerplate/commitlint.config.cjs`](boilerplate/commitlint.config.cjs), but only include dependencies and scripts needed by the target project.
+- Reuse the ESLint flat config from [`boilerplate/eslint.config.mjs`](boilerplate/eslint.config.mjs) for TypeScript/Next.js projects, adapting paths only when the project structure requires it.
+- Reuse the repo pipeline setup from [`boilerplate/.github/workflows/ci.yml`](boilerplate/.github/workflows/ci.yml), adjusting commands to match the actual project stack and omitting jobs for missing stacks.
+- Reuse the env setup pattern from [`boilerplate/.env.example`](boilerplate/.env.example), adding only env variables that are actually used.
+- Use Dockerfile templates from [`boilerplate/dockerfiles`](boilerplate/dockerfiles) only when the project needs Docker.
+- Copy only the Dockerfiles for stacks that actually exist in the project: [`nextjs.Dockerfile`](boilerplate/dockerfiles/nextjs.Dockerfile), [`python-be.Dockerfile`](boilerplate/dockerfiles/python-be.Dockerfile), [`rust-be.Dockerfile`](boilerplate/dockerfiles/rust-be.Dockerfile), or [`go-be.Dockerfile`](boilerplate/dockerfiles/go-be.Dockerfile).
 - Do not add Python, Rust, Go, or Node backend Dockerfiles when the project is only a landing page or simple presentation website.
 - Omit non-folder-specific duplication when extending the workspace.
 
@@ -62,7 +61,6 @@ Use a page-scoped component structure:
 
 Additional structure rules:
 
-- Do not create a `/web/src/features` folder.
 - Put page-specific components into folders named after the page where they are used.
 - Put reusable cross-page components into `/web/src/components/shared`.
 - If a hook or util is specific to a single component, colocate it with that component.
@@ -105,12 +103,12 @@ Additional structure rules:
 
 - No hardcoded user-facing strings in components or routes.
 - All text must go through translations.
-- Use namespaces per feature.
+- Use namespaces per page.
 
 ## Environment And Secrets
 
 - No secrets in client code.
-- Add every env variable to [`/web/.env.example`](/Users/teapot/work/test/agents-md/web/.env.example).
+- Add every env variable to `/web/.env.example`.
 - Separate public and private envs.
 
 ## Testing
