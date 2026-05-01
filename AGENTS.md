@@ -46,6 +46,9 @@
 ## Reuse Rules
 
 - Treat [`boilerplate`](boilerplate) as a source of reusable templates, not a folder to copy wholesale.
+- When creating a new project, always create a local `AGENTS.md` in that project.
+- The new project's `AGENTS.md` should explicitly reference this central template via GitHub: [github.com/TurniXXD/agents-md/blob/main/AGENTS.md](https://github.com/TurniXXD/agents-md/blob/main/AGENTS.md).
+- Prefer a lightweight project-local `AGENTS.md` that extends this template with only project-specific additions, constraints, or overrides.
 - Always add a `.gitignore` to generated projects.
 - Build project `.gitignore` files from [`boilerplate/.gitignore`](boilerplate/.gitignore), but copy only the sections that apply to the project being created.
 - Do not add ignore rules for stacks that are not present; for example, do not add Python backend rules when the project has no Python backend, and do not add Rust or Go rules unless those backends exist.
@@ -119,9 +122,9 @@ Additional structure rules:
 
 ## Form Rules
 
-- If a page contains a form, in the mobile layout move input labels onto the top border of the input so the label overlaps the field border instead of sitting above the field.
-- On mobile, treat these labels as integrated field captions, not as separate stacked text above the input.
-- Browser autofill colors must match the form background.
+- If a page contains a form, at `950px` viewport width and below move input labels onto the top border of the input so the label overlaps the field border instead of sitting above the field.
+- At `950px` and below, treat these labels as integrated field captions, not as separate stacked text above the input.
+- Browser autofill colors must match the input background color.
 - Form background and input background must use the same background color.
 - Reuse one shared field pattern for label, input, helper text, and error message instead of re-inventing field structure per form.
 - Every form must have clear validation, error, success, and submitting states.
@@ -199,6 +202,10 @@ Additional structure rules:
 
 - Every util must have a unit test.
 - Every form must have an e2e test.
+- For visually important pages or components, add a Playwright visual regression suite using screenshots.
+- Do not rely on smoke tests alone when the task changes layout, spacing, typography, navigation, responsive behavior, or visual hierarchy.
+- Keep visual regression coverage for both desktop and mobile when the UI differs between breakpoints.
+- Prefer dedicated scripts for normal visual checks and baseline updates, for example `test:e2e:visual` and `test:e2e:visual:update`.
 
 ## Generation Priorities
 
