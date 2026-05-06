@@ -43,6 +43,11 @@
 - Landing pages, presentation websites, and other mostly static marketing sites should remain frontend-only.
 - If backend work is actually needed, state the reason clearly before introducing a separate backend service.
 
+## Website Privacy Rules
+
+- For public-facing websites such as presentation websites or e-shops, do not store data in cookies or `localStorage` unless the user has given cookie consent.
+- Only treat internal apps or clearly authenticated product applications as exempt from this default public-website consent rule.
+
 ## Reuse Rules
 
 - Treat [`boilerplate`](boilerplate) as a source of reusable templates, not a folder to copy wholesale.
@@ -55,6 +60,9 @@
 - Reuse the same root pre-commit flow from [`boilerplate/.husky/pre-commit`](boilerplate/.husky/pre-commit) and [`boilerplate/.husky/commit-msg`](boilerplate/.husky/commit-msg) when the project uses Git hooks.
 - Reuse Husky, lint-staged, prettier, commitlint, and ESLint dependencies from [`boilerplate/package.json`](boilerplate/package.json) and [`boilerplate/commitlint.config.cjs`](boilerplate/commitlint.config.cjs), but only include dependencies and scripts needed by the target project.
 - Reuse the ESLint flat config from [`boilerplate/eslint.config.mjs`](boilerplate/eslint.config.mjs) for TypeScript/Next.js projects, adapting paths only when the project structure requires it.
+- Reuse the general Playwright visual regression config from [`boilerplate/playwright.visual.config.ts`](boilerplate/playwright.visual.config.ts) when the project needs screenshot-based UI regression coverage.
+- The boilerplate Playwright visual config intentionally starts with `en` as the only locale.
+- Adjust the locale list and any locale-aware path handling in the visual test setup to match the target project's actual i18n settings before using it broadly.
 - Reuse the repo pipeline setup from [`boilerplate/.github/workflows/ci.yml`](boilerplate/.github/workflows/ci.yml), adjusting commands to match the actual project stack and omitting jobs for missing stacks.
 - Reuse the env setup pattern from [`boilerplate/.env.example`](boilerplate/.env.example), adding only env variables that are actually used.
 - Use Dockerfile templates from [`boilerplate/dockerfiles`](boilerplate/dockerfiles) only when the project needs Docker.
@@ -196,6 +204,7 @@ Additional structure rules:
 
 - No secrets in client code.
 - Add every env variable to `/web/.env.example`.
+- Always add every newly introduced env variable to the relevant `.env.example` file in the project.
 - Separate public and private envs.
 
 ## Testing
@@ -203,8 +212,11 @@ Additional structure rules:
 - Every util must have a unit test.
 - Every form must have an e2e test.
 - For visually important pages or components, add a Playwright visual regression suite using screenshots.
+- Prefer the shared baseline from [`boilerplate/playwright.visual.config.ts`](boilerplate/playwright.visual.config.ts) for visual regression setup instead of inventing a new config from scratch.
 - Do not rely on smoke tests alone when the task changes layout, spacing, typography, navigation, responsive behavior, or visual hierarchy.
 - Keep visual regression coverage for both desktop and mobile when the UI differs between breakpoints.
+- Keep the default boilerplate visual locale as `en` unless the target project requires a different or multi-locale setup.
+- If the project supports multiple locales, explicitly adjust the visual regression locale matrix to the locales that matter for that project.
 - Prefer dedicated scripts for normal visual checks and baseline updates, for example `test:e2e:visual` and `test:e2e:visual:update`.
 
 ## Generation Priorities
