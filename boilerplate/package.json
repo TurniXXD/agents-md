@@ -16,6 +16,7 @@
     "test:e2e:visual:report": "playwright show-report"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.22.0",
     "@react-three/fiber": "^9.4.0",
     "classnames": "^2.5.1",
     "lucide-react": "^0.575.0",

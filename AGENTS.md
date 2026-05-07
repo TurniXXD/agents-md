@@ -63,6 +63,7 @@
 - Reuse the general Playwright visual regression config from [`boilerplate/playwright.visual.config.ts`](boilerplate/playwright.visual.config.ts) when the project needs screenshot-based UI regression coverage.
 - The boilerplate Playwright visual config intentionally starts with `en` as the only locale.
 - Adjust the locale list and any locale-aware path handling in the visual test setup to match the target project's actual i18n settings before using it broadly.
+- If the project uses Sentry, reuse the centralized boilerplate setup from [`boilerplate/sentry/sentryLogger.ts`](boilerplate/sentry/sentryLogger.ts), [`boilerplate/sentry/sentry.shared.ts`](boilerplate/sentry/sentry.shared.ts), and [`boilerplate/sentry/sentry.client.config.ts`](boilerplate/sentry/sentry.client.config.ts) instead of inventing ad hoc logging and init logic.
 - Reuse the repo pipeline setup from [`boilerplate/.github/workflows/ci.yml`](boilerplate/.github/workflows/ci.yml), adjusting commands to match the actual project stack and omitting jobs for missing stacks.
 - Reuse the env setup pattern from [`boilerplate/.env.example`](boilerplate/.env.example), adding only env variables that are actually used.
 - Use Dockerfile templates from [`boilerplate/dockerfiles`](boilerplate/dockerfiles) only when the project needs Docker.
@@ -122,9 +123,12 @@ Additional structure rules:
 - Target a maximum of roughly 300 lines per component file.
 - Keep business logic out of UI components.
 - Move lifecycle-driven logic into separate hook files when that improves clarity.
+- Add stable `data-testid` markers to reusable loading components and reusable error components so visual and e2e tests can detect those states reliably.
 - Use Server Components by default.
 - Mark Client Components explicitly.
 - Avoid unnecessary `useEffect`.
+- Inside `useEffect`, do not use the `void` keyword to fire async work.
+- Handle promises explicitly inside `useEffect`, for example by calling an inner async function and attaching clear success and error handling.
 - Memoize only when needed.
 - Use refs only when necessary; prefer state when possible.
 
@@ -184,6 +188,8 @@ Additional structure rules:
 - All async code must handle errors explicitly.
 - No silent failures.
 - Log meaningful errors.
+- If Sentry is enabled in the project, route controlled application errors, warnings, and debug cases through a centralized Sentry logger instead of scattering raw `Sentry.captureException` and `Sentry.captureMessage` calls across the codebase.
+- When Sentry is used, keep the init config centralized and reusable, including shared base options, replay policy, ignored error filtering, and section tagging.
 - Prefer simple solutions over complex abstractions.
 - Avoid premature optimization.
 
@@ -217,6 +223,9 @@ Additional structure rules:
 - Keep visual regression coverage for both desktop and mobile when the UI differs between breakpoints.
 - Keep the default boilerplate visual locale as `en` unless the target project requires a different or multi-locale setup.
 - If the project supports multiple locales, explicitly adjust the visual regression locale matrix to the locales that matter for that project.
+- In pages and components covered by visual regression, expose stable `data-testid` markers for loading states and error states so the visual test layer can detect them deterministically.
+- Do not save a visual snapshot while any loading component is still present on the page.
+- If an error component is present, do not save the snapshot at all; record the failure in the visual test logs and let the case retry again later instead of accepting an error-state image as a baseline.
 - Prefer dedicated scripts for normal visual checks and baseline updates, for example `test:e2e:visual` and `test:e2e:visual:update`.
 
 ## Generation Priorities
