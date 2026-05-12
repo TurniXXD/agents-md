@@ -91,6 +91,24 @@ Use a page-scoped component structure:
   globals/
 ```
 
+If a separate backend is truly needed, organize it by technical layers instead of page names or random business folders:
+
+```text
+/backend/
+  api/
+  auth/
+  db/
+    migrations/
+    client.ts
+    schema.ts
+  models/
+  repositories/
+  services/
+  integrations/
+  jobs/
+  lib/
+```
+
 Additional structure rules:
 
 - Put page-specific components into folders named after the page where they are used.
@@ -99,6 +117,9 @@ Additional structure rules:
 - If a hook or util is specific to a single component, colocate it with that component.
 - API calls go through a dedicated `/api` layer.
 - Never call `fetch` directly inside React components.
+- If a separate backend exists, prefer technical folders such as `services`, `repositories`, `models`, `integrations`, and `db` over scattered business-area folders like `products` at the backend root.
+- Keep external providers such as Stripe, email, storage, and other third-party integrations inside dedicated integration folders instead of mixing them into domain service files.
+- Keep database access inside repositories or clearly isolated data-access modules, not inside route handlers or UI-facing code.
 
 ## Naming Rules
 
@@ -215,6 +236,8 @@ Additional structure rules:
 
 ## Testing
 
+- Every folder that contains tests must keep them inside a local `__tests__` subfolder for that folder.
+- Prefer grouping all tests for a module, service, component, or utility inside its nearest `__tests__` folder instead of scattering `*.test.*` files across sibling directories.
 - Every util must have a unit test.
 - Every form must have an e2e test.
 - For visually important pages or components, add a Playwright visual regression suite using screenshots.
