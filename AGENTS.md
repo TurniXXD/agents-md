@@ -29,6 +29,10 @@
 ## Default Decisions
 
 - Use absolute imports via `@/` by default.
+- Prefer absolute imports for cross-area imports.
+- Use relative imports only for true sibling or private files such as `./hooks`, `./utils`, `./data`, or component-local helpers.
+- Do not use deep relative imports such as `../../...` or `../../../...` when a configured alias exists.
+- When changing imports, preserve the project's configured alias style, for example `@/...`, `components/...`, or `design-system/...`, depending on the repo.
 - Use React Hook Form with Zod as the default form pattern.
 - Use a dedicated `/api` layer for all API communication.
 - Use one shared dialog/modal pattern across the project instead of custom dialog implementations per page.
@@ -120,6 +124,10 @@ Additional structure rules:
 - If a separate backend exists, prefer technical folders such as `services`, `repositories`, `models`, `integrations`, and `db` over scattered business-area folders like `products` at the backend root.
 - Keep external providers such as Stripe, email, storage, and other third-party integrations inside dedicated integration folders instead of mixing them into domain service files.
 - Keep database access inside repositories or clearly isolated data-access modules, not inside route handlers or UI-facing code.
+- Barrel files such as `index.ts` should contain simple re-exports only.
+- Before adding a new barrel export, check that the same module is not already exported.
+- Avoid duplicate `export * from ...` entries.
+- Avoid using barrels to hide unclear ownership; prefer importing shared types and primitives from their owning module.
 
 ## Naming Rules
 
@@ -150,6 +158,12 @@ Additional structure rules:
 - Avoid unnecessary `useEffect`.
 - Inside `useEffect`, do not use the `void` keyword to fire async work.
 - Handle promises explicitly inside `useEffect`, for example by calling an inner async function and attaching clear success and error handling.
+- Fix primitive and component behavior at the primitive implementation level instead of patching unrelated call sites.
+- When replacing or recreating a UI primitive, preserve its behavioral contract first, including responsive props, pseudo props, forwarded DOM props, default styles, and `ref` or `as` support.
+- Preserve responsive prop behavior for primitives, including the project's existing responsive value format.
+- Preserve `className`, `style`, and forwarded native DOM props when refactoring primitives.
+- Avoid adding extra wrapper layers around primitives unless they are required, because wrappers can change CSS order, layout behavior, and forwarded props.
+- Validate migrated primitives on mobile layouts, not only desktop.
 - Memoize only when needed.
 - Use refs only when necessary; prefer state when possible.
 
@@ -197,6 +211,11 @@ Additional structure rules:
 
 - Prefer `type` over `interface`.
 - Create base types for shared types and extend from them.
+- Keep shared prop and type ownership clear.
+- Shared primitive props should live in one canonical type module.
+- Do not import a prop type from one module and immediately re-export the same type from a component index unless there is a deliberate compatibility reason.
+- Avoid duplicate public type entry points for the same type.
+- Prefer importing shared props from the canonical type source instead of component implementation folders.
 - Never trust client input.
 - Validate all inputs with Zod.
 - Protect server actions and server-side entry points.
@@ -271,13 +290,21 @@ When generating or editing code, prioritize:
 
 - Do not introduce new libraries unless necessary.
 - Always reuse existing patterns in the repo before creating new ones.
+- Reuse existing design-system primitives, tokens, helpers, and theme utilities before creating new ones.
+- Keep legacy compatibility layers isolated and clearly marked when a migration is in progress.
+- Do not add new behavior back into deprecated or legacy abstractions when the project is migrating away from them.
 
 ## Done Criteria
 
 - Mobile layout checked.
 - Slower and smaller device experience checked when the page contains 3D, forms, or heavy visuals.
 - No hardcoded user-facing strings.
+- No duplicate barrel exports.
+- Cross-area imports use configured aliases.
+- Shared prop types have a single canonical owner.
+- Migrated UI primitives are checked for mobile overflow and responsive behavior.
 - Shared SCSS variables used for breakpoints and semantic colors.
 - No eager Three.js or STL imports in the main page bundle.
 - Loading, empty, error, and success states covered where relevant.
 - Accessibility basics covered for forms, buttons, dialogs, and navigation.
+- TypeScript passes after import and path refactors.
