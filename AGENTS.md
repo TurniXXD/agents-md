@@ -52,6 +52,17 @@
 - For public-facing websites such as presentation websites or e-shops, do not store data in cookies or `localStorage` unless the user has given cookie consent.
 - Only treat internal apps or clearly authenticated product applications as exempt from this default public-website consent rule.
 
+## Security Rules
+
+- Keep framework and server dependencies on patched versions. Run the relevant package audit before launch work or when touching dependency manifests, and fix known high or critical vulnerabilities before shipping.
+- Configure production security headers explicitly, including CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, and clickjacking protection such as `frame-ancestors` or `X-Frame-Options`.
+- For session-based authentication, protect state-changing routes from CSRF. Use framework-supported CSRF protection when available, or document and test the chosen alternative.
+- Session cookies must be `HttpOnly`, `Secure` in production, and use an intentional `SameSite` policy.
+- Production secrets must be required at startup. Do not allow production builds or servers to run with placeholder, empty, or dev-only fallback secrets.
+- Validate private and public environment variables separately. Public envs must never contain tokens, secrets, internal service URLs, or server-only credentials.
+- Protect internal APIs, webhook handlers, and third-party integration endpoints with explicit authentication or signature verification. Add tests for rejected missing, malformed, expired, or invalid credentials.
+- Do not expose detailed internal errors, stack traces, secret values, or provider payloads in client-facing production responses.
+
 ## Reuse Rules
 
 - Treat [`boilerplate`](boilerplate) as a source of reusable templates, not a folder to copy wholesale.
@@ -298,6 +309,9 @@ When generating or editing code, prioritize:
 
 - Mobile layout checked.
 - Slower and smaller device experience checked when the page contains 3D, forms, or heavy visuals.
+- Dependency audit checked when dependency manifests or launch readiness are in scope.
+- Production env validation rejects missing, placeholder, or dev-only secrets.
+- Security headers and CSRF posture are explicit for authenticated or commerce applications.
 - No hardcoded user-facing strings.
 - No duplicate barrel exports.
 - Cross-area imports use configured aliases.
