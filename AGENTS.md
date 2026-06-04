@@ -54,13 +54,13 @@
 
 ## Security Rules
 
-- Keep framework and server dependencies on patched versions. Run the relevant package audit before launch work or when touching dependency manifests, and fix known high or critical vulnerabilities before shipping.
-- Configure production security headers explicitly, including CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, and clickjacking protection such as `frame-ancestors` or `X-Frame-Options`.
-- For session-based authentication, protect state-changing routes from CSRF. Use framework-supported CSRF protection when available, or document and test the chosen alternative.
-- Session cookies must be `HttpOnly`, `Secure` in production, and use an intentional `SameSite` policy.
-- Production secrets must be required at startup. Do not allow production builds or servers to run with placeholder, empty, or dev-only fallback secrets.
-- Validate private and public environment variables separately. Public envs must never contain tokens, secrets, internal service URLs, or server-only credentials.
-- Protect internal APIs, webhook handlers, and third-party integration endpoints with explicit authentication or signature verification. Add tests for rejected missing, malformed, expired, or invalid credentials.
+- Treat dependency audits as a review signal, not an automatic upgrade instruction. When dependency manifests or launch readiness are in scope, run the relevant audit or check the configured dependency scanning output. Report high or critical vulnerabilities and recommend a remediation path, but do not upgrade underlying packages unless the task explicitly includes dependency updates or a human approves the change.
+- For production apps, verify that security headers are covered by the framework, hosting platform, backend, or explicit app configuration. Configure missing headers when appropriate, including CSP or a documented CSP decision, HSTS for HTTPS production deployments, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and clickjacking protection such as `frame-ancestors` or `X-Frame-Options`.
+- For cookie/session-based authentication, protect state-changing routes from CSRF. Prefer framework-supported protection such as NextAuth defaults when available; otherwise document and test the chosen CSRF strategy.
+- Do not weaken framework session cookie defaults. If custom session/auth cookies are configured, they must intentionally set `HttpOnly`, `Secure` in production, and an appropriate `SameSite` policy.
+- Model environment variables with T3 Env/Zod or the project's existing env validation layer. Required production secrets must fail validation when missing, empty, placeholder, or dev-only. Optional secrets must be explicitly marked optional and the app must degrade safely when they are not provided.
+- Keep public and private envs separated. Public envs must not contain tokens, secrets, private service URLs, or server-only credentials.
+- Protect internal APIs, webhook handlers, and third-party integration endpoints with explicit authentication, authorization, or signature verification when they are reachable outside the trusted process boundary. Add negative tests or documented verification for missing, malformed, expired, or invalid credentials when practical.
 - Do not expose detailed internal errors, stack traces, secret values, or provider payloads in client-facing production responses.
 
 ## Reuse Rules
@@ -309,9 +309,9 @@ When generating or editing code, prioritize:
 
 - Mobile layout checked.
 - Slower and smaller device experience checked when the page contains 3D, forms, or heavy visuals.
-- Dependency audit checked when dependency manifests or launch readiness are in scope.
-- Production env validation rejects missing, placeholder, or dev-only secrets.
-- Security headers and CSRF posture are explicit for authenticated or commerce applications.
+- Dependency audit or dependency scanning output checked when dependency manifests, release work, or launch readiness are in scope; high/critical findings are reported instead of silently ignored.
+- Required production envs/secrets are validated by the existing env validation layer, and optional envs are intentionally modeled as optional.
+- Security headers and CSRF/session posture are verified, configured, or documented when authentication, commerce, webhooks, internal APIs, or production launch readiness are in scope.
 - No hardcoded user-facing strings.
 - No duplicate barrel exports.
 - Cross-area imports use configured aliases.
