@@ -1,41 +1,43 @@
 import * as Sentry from "@sentry/nextjs";
 
 import {
-  disableSessionReplaysForErrorTypes,
   ignoreErrorMessages,
   ignoreErrors,
+  getSentryClientDsn,
+  sanitizeSentryEvent,
   sentryBaseConfig,
 } from "./sentry.shared";
 
 export const initWebSentry = () => {
+  const dsn = getSentryClientDsn();
+
   Sentry.init({
     ...sentryBaseConfig,
-    integrations: [Sentry.replayIntegration()],
+    dsn,
+    enabled: Boolean(dsn),
+    integrations: [],
     ignoreErrors,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
     beforeSend(event) {
-      const exception = event.exception?.values?.[0];
+      const sanitizedEvent = sanitizeSentryEvent(event);
+      const exception = sanitizedEvent.exception?.values?.[0];
       const message = exception?.value ?? "";
 
       if (
         ignoreErrorMessages.some((ignoredMessage) =>
-          message.toLocaleLowerCase().includes(ignoredMessage.toLocaleLowerCase()),
+          message
+            .toLocaleLowerCase()
+            .includes(ignoredMessage.toLocaleLowerCase()),
         )
       ) {
         return null;
       }
 
-      if (exception?.type && disableSessionReplaysForErrorTypes.includes(exception.type)) {
-        return null;
-      }
-
-      event.tags = {
-        ...event.tags,
+      sanitizedEvent.tags = {
+        ...sanitizedEvent.tags,
         section: "web",
       };
 
-      return event;
+      return sanitizedEvent;
     },
   });
 };

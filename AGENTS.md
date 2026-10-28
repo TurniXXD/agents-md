@@ -67,7 +67,7 @@
 - Reuse the general Playwright visual regression config from [`boilerplate/playwright.visual.config.ts`](boilerplate/playwright.visual.config.ts) when the project needs screenshot-based UI regression coverage.
 - The boilerplate Playwright visual config intentionally starts with `en` as the only locale.
 - Adjust the locale list and any locale-aware path handling in the visual test setup to match the target project's actual i18n settings before using it broadly.
-- If the project uses Sentry, reuse the centralized boilerplate setup from [`boilerplate/sentry/sentryLogger.ts`](boilerplate/sentry/sentryLogger.ts), [`boilerplate/sentry/sentry.shared.ts`](boilerplate/sentry/sentry.shared.ts), and [`boilerplate/sentry/sentry.client.config.ts`](boilerplate/sentry/sentry.client.config.ts) instead of inventing ad hoc logging and init logic.
+- If a project should use Sentry, implement the complete centralized setup documented in [`boilerplate/sentry/README.md`](boilerplate/sentry/README.md). Reuse its logger, API error helper, shared privacy config, client initialization, Node.js server config, Edge config, instrumentation hooks, source-map build config, and env pattern instead of inventing ad hoc logging or initializing only one runtime.
 - Reuse the repo pipeline setup from [`boilerplate/.github/workflows/ci.yml`](boilerplate/.github/workflows/ci.yml), adjusting commands to match the actual project stack and omitting jobs for missing stacks.
 - Reuse the env setup pattern from [`boilerplate/.env.example`](boilerplate/.env.example), adding only env variables that are actually used.
 - Use Dockerfile templates from [`boilerplate/dockerfiles`](boilerplate/dockerfiles) only when the project needs Docker.
@@ -167,6 +167,11 @@ Additional structure rules:
 - Memoize only when needed.
 - Use refs only when necessary; prefer state when possible.
 
+## Responsive Hero Rules
+
+- On mobile presentation and service pages, do not stack a decorative right-hand hero visual below the hero copy. Hide the right-side visual at the mobile breakpoint so the heading, description, and primary action form the complete hero.
+- Keep the right-side visual on mobile only when it is essential to the primary task, explicitly designed for the compact layout, and covered by a mobile layout test.
+
 ## Form Rules
 
 - If a page contains a form, at `950px` viewport width and below move input labels onto the top border of the input so the label overlaps the field border instead of sitting above the field.
@@ -230,6 +235,10 @@ Additional structure rules:
 - Log meaningful errors.
 - If Sentry is enabled in the project, route controlled application errors, warnings, and debug cases through a centralized Sentry logger instead of scattering raw `Sentry.captureException` and `Sentry.captureMessage` calls across the codebase.
 - When Sentry is used, keep the init config centralized and reusable, including shared base options, replay policy, ignored error filtering, and section tagging.
+- In a Next.js App Router project with Sentry, configure all applicable runtimes: `instrumentation-client.ts` for the browser, `sentry.server.config.ts` for Node.js, `sentry.edge.config.ts` for Edge, and `instrumentation.ts` for registration plus `captureRequestError`.
+- Route every unsuccessful API result through the centralized Sentry error-response helper or an equivalent project abstraction. Expected client rejections should be warnings; unexpected provider, configuration, and server failures should be exceptions.
+- Never include form values, email addresses, request bodies, cookies, authorization headers, Turnstile tokens, signed referral values, or secrets in Sentry context. Use only bounded operational metadata such as endpoint, status, error code, field names, provider status, and boolean configuration flags.
+- Keep `sendDefaultPii` disabled by default. Do not enable Session Replay, performance tracing, or PII collection unless the project explicitly requires it and its consent and privacy documentation cover it.
 - Prefer simple solutions over complex abstractions.
 - Avoid premature optimization.
 
